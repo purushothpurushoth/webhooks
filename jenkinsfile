@@ -1,0 +1,25 @@
+pipeline {
+    agent any 
+    stages{
+        stage("check_out"){
+            steps{
+               cleanWs()
+               checkout scmGit(branches: [[name: '*/${Branch_Name}']], 
+               userRemoteConfigs: [[url: '${Git_Url}']]) 
+            }
+        }
+        stage("build"){
+            steps{
+            sh "pwd"
+            sh "npm i"
+            sh"npm run build"
+            }
+        }
+        stage("deploy"){
+            steps{
+                sh "aws s3 cp dist/angular-01 s3://${S3_Bucket_Name} --recursive "
+            }
+        }
+        
+    }
+}
